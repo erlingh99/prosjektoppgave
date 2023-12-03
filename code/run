@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -ex
 
 # This is the master script for the capsule. When you click "Reproducible Run", the code in this file will execute.
-python -u run.py "$@"
+python -u run.py  ../data/npy/2013-08-19-17-15-55.npy -p -b ../ravnkloa_radar_base_map
