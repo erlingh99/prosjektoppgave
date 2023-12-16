@@ -43,7 +43,7 @@ class Precomputer:
             self.u_int[i] = np.array([*z, integral])
             self.expect[i] = np.array([*z, *expect])
             self.covar[i] = np.array([*z, *var.ravel()])
-
+       
         print(f"Done. Elapsed time: {(time.time() - start):.1f}s")
 
     def __generate_z_sampling_points__(self, zrange, grid_size):
@@ -102,4 +102,18 @@ class Precomputer:
 
         weights = 1/pos_diff[min_idx]
         covars = self.covar[min_idx, 2:].reshape((-1, 2, 2))
-        return np.average(covars, axis=0, weights=weights)
+        P = np.average(covars, axis=0, weights=weights)
+
+        ### true moment matching has a spread of inovations, but this gives worse performance.
+        # It inflates the covariance, since we do not actually want the true moment matched to k closest
+        # we want the covariance of a single gaussian we approximate by the average of the 4
+
+        # expects = self.expect[min_idx, 2:].reshape(-1, 2)
+        # avg_expect = np.average(expects, axis=0,  weights=weights)
+        
+        # expects_outer = np.einsum("ij,ik -> ijk", expects, expects)
+        # wP = np.average(expects_outer, axis=0, weights=weights)
+        # P_spread = wP - np.outer(avg_expect, avg_expect)
+        # P = P + P_spread
+
+        return P

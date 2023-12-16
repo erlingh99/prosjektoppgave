@@ -4,7 +4,7 @@ import yaml
 
 x = []
 y = []
-with open("../birth_analysis/birthstats.txt", "r") as f:
+with open("./birth_analysis/birthstats.txt", "r") as f:
     lines = [eval(l.replace("\n", '')) for l in f.readlines()]
     for l in lines:
         if l[1] < 50:
@@ -34,12 +34,14 @@ dx = dy = grid_size//2 * np.ones_like(zpos)
 dz = hist.ravel()/num_scans/(grid_size**2)
 
 #saves xpos, ypos, intensity. The position is in the middle of the grid cell
-# np.save("./birth_analysis/birth_intensity2.npy", list(zip(xpos, ypos, dz)))
+np.save("./birth_analysis/birth_intensity.npy", list(zip(xpos, ypos, dz)))
 
-with open("../ravnkloa_radar_base_map.yaml", "r") as f:
+
+
+with open("./ravnkloa_radar_base_map.yaml", "r") as f:
     doc = yaml.safe_load(f)
 
-map = np.fromfile("../ravnkloa_radar_base_map.bin", dtype=bool).reshape((doc["map_height"], doc["map_width"])).T
+map = np.fromfile("./ravnkloa_radar_base_map.bin", dtype=bool).reshape((doc["map_height"], doc["map_width"])).T
 map = map.astype(float)
 
 mapsize = 400

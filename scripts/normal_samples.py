@@ -2,6 +2,23 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 
+
+mean = [-30, -100]
+
+### find R at this position
+def R(mean):
+    r = np.linalg.norm(mean)
+    theta = np.arctan2(mean[1], mean[0])
+
+    s_theta = np.sin(theta)
+    c_theta = np.cos(theta)
+    J = np.array([[-r*s_theta, c_theta],[r*c_theta, s_theta]])
+    polar = np.array([[(np.pi/180)**2, 0],[0, 16]])
+    return J@polar@J.T + np.eye(2)*4
+
+sigma = R(mean) 
+
+
 num_std = 3.5 #sqrt(gamma)
 Sigma = np.array([[4, 1], [1, 1]])
 

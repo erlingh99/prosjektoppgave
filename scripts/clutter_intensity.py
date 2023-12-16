@@ -5,7 +5,7 @@ import yaml
 
 measurements = []
 
-files = glob.glob("../data/npy/*.npy")
+files = glob.glob("./data/npy/*.npy")
 for file in files:
     data = np.load(file, allow_pickle=True).item()
     meas = list(zip(data["y"], data["x"]))
@@ -17,10 +17,10 @@ x = measurements[:,0]
 y = measurements[:,1]
 
 
-with open("../ravnkloa_radar_base_map.yaml", "r") as f:
+with open("./ravnkloa_radar_base_map.yaml", "r") as f:
     doc = yaml.safe_load(f)
 
-map = np.fromfile("../ravnkloa_radar_base_map.bin", dtype=bool).reshape((doc["map_height"], doc["map_width"])).T
+map = np.fromfile("./ravnkloa_radar_base_map.bin", dtype=bool).reshape((doc["map_height"], doc["map_width"])).T
 
 plt.imshow(map, origin="lower",   
             extent=[doc["origin_y_coordinate"],
@@ -45,6 +45,8 @@ grid = np.zeros(shape=(grid_shape, grid_shape))
 
 hist, xedges, yedges = np.histogram2d(x, y, bins=grid_shape, range=[[-grid_radius, grid_radius], [-grid_radius, grid_radius]])
 
+
+
 fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 
@@ -57,7 +59,8 @@ zpos = 0
 dx = dy = grid_size//2 * np.ones_like(zpos)
 #intensity = count / num scans / cell size 
 dz = hist.ravel()/num_scans/(grid_size**2)
-np.save("../clutter_analysis/clutter_intensity_all.npy", list(zip(xpos, ypos, dz)))
+# np.save("./clutter_analysis/clutter_intensity_all.npy", list(zip(xpos, ypos, dz)))
+print(np.average(np.sort(dz)[-20:]))
 
 map = map.astype(float)
 mapsize = 400

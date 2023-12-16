@@ -84,9 +84,10 @@ class ScenarioPlot(object):
 
     def create_fig(self, savepath, measurements, track_history, ownship, timestamps, ground_truth=None):
         self.create(measurements, track_history, ownship, timestamps, ground_truth)
-        # self.fig.savefig(savepath, dpi=600, format=savepath.split(".")[-1])
-
-        plt.show()
+        if savepath is not None:
+            self.fig.savefig(savepath, dpi=600, format=savepath.split(".")[-1])
+        else:
+            plt.show()
         
 
 def plot_measurements(measurements_all, ax, timestamps, marker_size=5):

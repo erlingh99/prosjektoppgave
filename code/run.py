@@ -9,6 +9,8 @@ import argparse
 
 import time
 
+import matplotlib.pyplot as plt
+
 import tqdm
 from os.path import join, basename, exists
 from os import mkdir
@@ -40,6 +42,9 @@ def setup_manager():
         
         unknown_influence_model = unknown_integral.PrecomputedTargetInfluence(tracker_params['birth_intensity'], tracker_params["P_D"], precomp)
         initiator = initiators.PrecomputedStateInitiator(unknown_influence_model, clutter_model, precomp)
+
+        # unknown_influence_model = unknown_integral.ApproxTargetInfluence(tracker_params['birth_intensity'], tracker_params["P_D"])
+        # initiator = initiators.ApproxStateInitiator(unknown_influence_model, clutter_model)  
     else:
         #slow
         # unknown_influence_model = unknown_integral.OnlineComputedTargetInfluence(tracker_params['birth_intensity'],
@@ -50,7 +55,8 @@ def setup_manager():
         #                                                     tracker_params['birth_intensity'])  
 
 
-        unknown_influence_model = unknown_integral.ApproxTargetInfluence(tracker_params['birth_intensity'], tracker_params["P_D"])
+        # unknown_influence_model = unknown_integral.ApproxTargetInfluence(tracker_params['birth_intensity'], tracker_params["P_D"])
+        unknown_influence_model = unknown_integral.GaussianSmoothTargetInfluence(tracker_params['birth_intensity'], tracker_params["P_D"])
         initiator = initiators.ApproxStateInitiator(unknown_influence_model, clutter_model)  
 
 
@@ -79,6 +85,7 @@ def setup_manager():
         initiator,
         measurement_model,
         tracker_params['init_Pvel'],
+        tracker_params['init_Pvel_ang'],
         mode_probabilities = init_mode_probs,
         kinematic_models = kinematic_models,
         visibility_probability = 0.9)
@@ -198,9 +205,22 @@ if __name__ == '__main__':
     if make_plot:
         print("Creating plot")
         save_path = join(dir, f"{basename(file).split('.')[0]}.png")
+        save_path = None
         plot.create_fig(save_path, measurements, manager.track_history, 
                         ownship, timestamps, ground_truth)
         
+        for idx, t in manager.track_history.items():
+            times = np.array([tt.timestamp for tt in t])
+            if len(times) < 20:
+                continue
+            probs = np.array([tt.mode_probabilities for tt in t])
+            plt.plot(times, probs[:, 0], label="CV_low")
+            plt.plot(times, probs[:, 1], label="CT")
+            plt.plot(times, probs[:, 2], label="CV_high")
+            plt.title(f"track {idx}")
+            plt.legend()
+            plt.ylim([0, 1])
+            plt.show()
         
     
     if make_movie:

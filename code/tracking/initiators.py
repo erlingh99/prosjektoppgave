@@ -9,13 +9,14 @@ from scipy.stats import norm
 
 
 class Initiator():
-    def __init__(self, initiator, measurement_model, initial_vel_cov, **other_initial_values):
+    def __init__(self, initiator, measurement_model, initial_vel_cov, initial_ang_cov, **other_initial_values):
         self.__allowed_initial_states__ = ['kinematic_models']
         self.__allowed_initial_probabilities__ = ['mode_probabilities', 'visibility_probability']
         self.__state_probability_combination__ = {'kinematic_models': 'mode_probabilities'}
         self.__independent_probabilities__ = ['visibility_probability']
         self.__initiator__ = initiator
         self.__initial_vel_cov__ = initial_vel_cov
+        self.__initial_ang_cov__ = initial_ang_cov
         self.__measurement_model__ = measurement_model
         self.__dict__.update((k, v) for k, v in other_initial_values.items() if k in self.__allowed_initial_states__)
         self.__dict__.update((k, v) for k, v in other_initial_values.items() if k in self.__allowed_initial_probabilities__)
@@ -51,7 +52,7 @@ class SinglePointInitiator(Initiator):
         mean, R = self.__initiator__.get_best_gaussian(mean, R)
 
         mean = np.hstack((mean, np.zeros(3)))
-        covariance = block_diag(R, self.__initial_vel_cov__*np.identity(3))
+        covariance = block_diag(R, np.diag([self.__initial_vel_cov__, self.__initial_vel_cov__, self.__initial_ang_cov__]))
         mapping = np.array([[1, 0, 0, 0, 0],[0, 0, 1, 0, 0],[0, 1, 0, 0, 0],[0, 0, 0, 1, 0],[0, 0, 0, 0, 0]])
 
         mean = mapping.dot(mean)

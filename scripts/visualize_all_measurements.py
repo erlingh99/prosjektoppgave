@@ -3,20 +3,20 @@ import matplotlib.pyplot as plt
 import yaml
 import glob
 """
-Plots the map and birthstats in the Fosenkaia NED-frame (which both map and measurements are in).
+Plots the map and measurements in the Fosenkaia NED-frame (which both map and measurements are in).
 Also plots the frame, and the pos of the Navico radar, with a 150m radius circle around the radar
 """
 
-with open("../ravnkloa_radar_base_map.yaml", "r") as f:
+with open("./ravnkloa_radar_base_map.yaml", "r") as f:
     doc = yaml.safe_load(f)
 
-map = np.fromfile("../ravnkloa_radar_base_map.bin", dtype=bool).reshape((doc["map_height"], doc["map_width"])).T
+map = np.fromfile("./ravnkloa_radar_base_map.bin", dtype=bool).reshape((doc["map_height"], doc["map_width"])).T
 
 
 x = []
 y = []
 
-files = glob.glob("../data/npy/*.npy")
+files = glob.glob("./data/npy/*.npy")
 for f in files:
     meas = np.load(f, allow_pickle=True).item()
     x.extend(meas["y"])

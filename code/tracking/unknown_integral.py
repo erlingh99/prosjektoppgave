@@ -28,6 +28,21 @@ class ApproxTargetInfluence(UnknownTargetInfluence):
     
     def get_unknown_influence(self, pos):
         return self.__unknown_target_intensity__(pos)*self.__P_d__
+
+class GaussianSmoothTargetInfluence(UnknownTargetInfluence):
+    def __init__(self, unknown_target_intensity, P_d, kernel=np.array([1, 2, 1])/4, dp=5):
+        super().__init__(unknown_target_intensity, P_d)
+        self.kernel2d = np.outer(kernel, kernel)
+        self.klen = len(kernel)
+        dim = len(kernel)//2
+        dpos_x, dpos_y = np.mgrid[-dp*dim:dp*dim+1:dp,-dp*dim:dp*dim+1:dp]
+        self.dpos = np.vstack((dpos_x.ravel(), dpos_y.ravel())).T
+    
+    def get_unknown_influence(self, pos):
+        positions = (self.dpos + pos).T
+        intensities = self.__unknown_target_intensity__(positions).reshape(self.klen, self.klen)
+        tot = np.einsum("ij,ij->", intensities, self.kernel2d)
+        return tot*self.__P_d__
     
 class PrecomputedTargetInfluence(UnknownTargetInfluence):
     def __init__(self, unknown_target_intensity, P_d, precomputed):
