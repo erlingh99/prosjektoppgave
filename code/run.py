@@ -116,7 +116,7 @@ if __name__ == '__main__':
     parser.add_argument("-a", "--analyze_birth", action='store_true')
     parser.add_argument("-p", "--create_plot", action='store_true')
     parser.add_argument("-m", "--create_movie", action='store_true')
-    parser.add_argument("-b", "--base_map_file")
+    parser.add_argument("-b", "--basemap_file")
     args = parser.parse_args()
 
     file = args.input_file
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     analyze_birth = args.analyze_birth
     make_movie = args.create_movie
     make_plot = args.create_plot
-    basemap = args.base_map_file
+    basemap = args.basemap_file
 
 
     joyride = False
@@ -209,19 +209,18 @@ if __name__ == '__main__':
         plot.create_fig(save_path, measurements, manager.track_history, 
                         ownship, timestamps, ground_truth)
         
-        for idx, t in manager.track_history.items():
-            times = np.array([tt.timestamp for tt in t])
-            if len(times) < 20:
-                continue
-            probs = np.array([tt.mode_probabilities for tt in t])
-            plt.plot(times, probs[:, 0], label="CV_low")
-            plt.plot(times, probs[:, 1], label="CT")
-            plt.plot(times, probs[:, 2], label="CV_high")
-            plt.title(f"track {idx}")
-            plt.legend()
-            plt.ylim([0, 1])
-            plt.show()
-        
+        # for idx, t in manager.track_history.items():
+        #     times = np.array([tt.timestamp for tt in t])
+        #     if len(times) < 20:
+        #         continue
+        #     probs = np.array([tt.mode_probabilities for tt in t])
+        #     plt.plot(times, probs[:, 0], label="CV_low")
+        #     plt.plot(times, probs[:, 1], label="CT")
+        #     plt.plot(times, probs[:, 2], label="CV_high")
+        #     plt.title(f"track {idx}")
+        #     plt.legend()
+        #     plt.ylim([0, 1])
+        #     plt.show()       
     
     if make_movie:
         writer = FFMpegWriter(fps=5)

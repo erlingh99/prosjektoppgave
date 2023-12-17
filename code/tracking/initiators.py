@@ -121,20 +121,16 @@ class StateInitiator(ABC):
     def get_best_gaussian(self, mean, sigma):
         pass
 
-    @abstractmethod
     def initial_existence_probability(self, pos):
-        pass
+        u = self.__unknown_influence__.get_unknown_influence(pos) #not compatible with IgnoreUnknown           
+        c = self.__clutter_model__.get_clutter_density(pos)
+        return float(u/(c + u))
 
 
 class ApproxStateInitiator(StateInitiator):
     def __init__(self, unknown_influence, clutter_model):
         super().__init__(unknown_influence, clutter_model)
-    
-    def initial_existence_probability(self, pos):
-        u = self.__unknown_influence__.get_unknown_influence(pos) #not compatible with IgnoreUnknown           
-        c = self.__clutter_model__.get_clutter_density(pos)
-        return u/(c + u)
-    
+       
     def get_best_gaussian(self, mean, sigma):
         return mean, sigma
     
@@ -143,11 +139,6 @@ class PrecomputedStateInitiator(StateInitiator):
     def __init__(self, unknown_influence, clutter_model, precomupted_vals):
         super().__init__(unknown_influence, clutter_model)
         self.__precomp__ = precomupted_vals
-
-    def initial_existence_probability(self, pos):
-        u = self.__unknown_influence__.get_unknown_influence(pos) #not compatible with IgnoreUnknown    
-        c = self.__clutter_model__.get_clutter_density(pos)
-        return u/(c + u)
     
     def get_best_gaussian(self, mean, sigma):
         n_mean = self.__precomp__.get_expect_at(mean)
@@ -174,11 +165,6 @@ class OnlineComputeStateInitiator(StateInitiator):
         idx = np.linalg.norm(points, axis=0) <= num_std #remove points outside num_std ellipsis
         self.points = points[:, idx]
         self.normal_values = norm.pdf(self.points[0, :])*norm.pdf(self.points[1, :]) #normalized sample points values
-    
-    def initial_existence_probability(self, pos):
-        u = self.__unknown_influence__.get_unknown_influence(pos) #not compatible with IgnoreUnknown    
-        c = self.__clutter_model__.get_clutter_density(pos)
-        return u/(c + u)
     
     def get_best_gaussian(self, mean, sigma):
         sigma = (sigma + sigma.T)/2 #ensure symmetry, shouldn't really be necessary
