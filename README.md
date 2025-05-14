@@ -1,7 +1,7 @@
 # The VIMMJIPDA tracker
 
 This code is all that is required to run the VIMMJIPDA tracker described in "Multi-target tracking with multiple models and
-visibility verified on maritime radar data". It is adapted as a part of the fall project of Erling Hjermstad to support spatially varying birth and clutter intensities.
+visibility verified on maritime radar data". The code is adapted from [Original Repo](https://codeocean.com/capsule/3448343/tree/v1) as a part of the fall project of Erling Hjermstad to support spatially varying birth and clutter intensities.
 A thorough review of the changes and implementation, with background info, can be fiund in the prosjektoppgave pdf.
 
 ## How to use the code
